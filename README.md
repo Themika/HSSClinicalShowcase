@@ -67,6 +67,47 @@ flowchart TB
 
 The main workflow is intentionally simple: find a protocol, inspect its treatment options, open the supporting PDF, and keep the library organized as it grows.
 
+## Feature Walkthroughs
+
+Add short screen recordings to the `images` folder using these filenames. GitHub and most Markdown viewers will automatically play `.gif` files in the README.
+
+### Add a protocol
+
+![GIF showing how to add a protocol](images/add-protocol.gif)
+
+### Add a treatment PDF
+
+![GIF showing how to attach a PDF to a treatment option](images/add-treatment-pdf.gif)
+
+### Delete a protocol or treatment option
+
+![GIF showing how to delete a protocol or treatment option](images/delete-item.gif)
+
+### Duplicate a protocol
+
+![GIF showing how to duplicate a protocol](images/duplicate-protocol.gif)
+
+### Pin an important protocol
+
+![GIF showing how to pin a protocol](images/pin-protocol.gif)
+
+### Pin an important protocol
+
+![GIF showing how to pin a protocol](images/search.gif)
+
+To add the recordings, save the GIF files in the repository's `images` folder with the exact names above. For example:
+
+```text
+images/
+	add-protocol.gif
+	add-treatment-pdf.gif
+	delete-item.gif
+	duplicate-protocol.gif
+	pin-protocol.gif
+```
+
+If a GIF has a different filename, update the matching Markdown link. Keep recordings short and crop them to the application area so employers can understand each workflow quickly.
+
 ## How It Works
 
 ```mermaid
