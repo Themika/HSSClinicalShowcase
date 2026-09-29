@@ -11,11 +11,22 @@
 
 </div>
 
+
+## Screenshots
+
+### Search and filter protocols
+
+![Search interface](images/search-view.png)
+
+### PDF viewer
+
+![PDF viewer](images/pdf-viewer.png)
+
 ## Project Overview
 
 Clinical Protocol Hub is a browser-based knowledge library for organizing clinical protocols, treatment options, and the PDF documents that support them. It is designed around a common workplace problem: important protocol information can be scattered across folders, files, and shared drives, making it slow to find the right document when it is needed.
 
-![Clinical Protocol Hub dashboard](images/Screenshot 2026-09-28 222050.png)
+![Clinical Protocol Hub dashboard](images/Screenshot%202026-09-28%20222050.png)
 
 The application gives a clinical or research team one focused place to:
 
@@ -184,3 +195,4 @@ Before using this application with real patient, trial, or protected health info
 ## License and Data Notice
 
 No license has been specified for this repository. Confirm ownership and licensing before distributing it. Do not upload real clinical or personally identifiable information until the security, privacy, and compliance controls required by the deployment environment are in place.
+
