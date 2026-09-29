@@ -91,7 +91,7 @@ Add short screen recordings to the `images` folder using these filenames. GitHub
 
 ![GIF showing how to pin a protocol](images/pin-protocol.gif)
 
-### Pin an important protocol
+### Search 
 
 ![GIF showing how to pin a protocol](images/search.gif)
 
