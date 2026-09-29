@@ -12,21 +12,9 @@
 </div>
 
 
-## Screenshots
-
-### Search and filter protocols
-
-![Search interface](images/search-view.png)
-
-### PDF viewer
-
-![PDF viewer](images/pdf-viewer.png)
-
 ## Project Overview
 
 Clinical Protocol Hub is a browser-based knowledge library for organizing clinical protocols, treatment options, and the PDF documents that support them. It is designed around a common workplace problem: important protocol information can be scattered across folders, files, and shared drives, making it slow to find the right document when it is needed.
-
-![Clinical Protocol Hub dashboard](images/Screenshot%202026-09-28%20222050.png)
 
 The application gives a clinical or research team one focused place to:
 
@@ -38,6 +26,46 @@ The application gives a clinical or research team one focused place to:
 - Synchronize protocol metadata, categories, extracted text, and PDFs through Firebase when configured.
 
 This repository demonstrates practical frontend engineering, browser storage, file handling, search indexing, cloud synchronization, and progressive enhancement in a small, dependency-light application.
+
+## Dashboard Preview
+
+The dashboard is designed for quick scanning: search and sort from the top, filter by category, then open or manage a protocol directly from its card.
+
+<p align="center">
+	<img src="images/Screenshot%202026-09-28%20222050.png" alt="Clinical Protocol Hub dashboard" width="900">
+</p>
+
+## What You Can Do
+
+```mermaid
+flowchart TB
+		Dashboard[Clinical Protocol Hub dashboard]
+		Dashboard --> Find[Find information]
+		Dashboard --> Organize[Organize the library]
+		Dashboard --> Documents[Manage documents]
+		Dashboard --> Share[Move and sync data]
+
+		Find --> Search[Search protocol and PDF text]
+		Find --> Filter[Filter by category]
+		Find --> Sort[Sort by name or recent updates]
+		Find --> Recent[Return to recently viewed items]
+
+		Organize --> Add[Add or edit protocols]
+		Organize --> Pin[Pin important protocols]
+		Organize --> Duplicate[Duplicate a protocol]
+		Organize --> Categories[Create, rename, or delete categories]
+
+		Documents --> Attach[Attach treatment PDFs]
+		Documents --> Read[Read PDFs in the viewer]
+		Documents --> Open[Open PDFs in a new tab]
+
+		Share --> Export[Export the full library]
+		Share --> Import[Import a library backup]
+		Share --> Offline[Keep a local offline copy]
+		Share --> Firebase[Sync with Firebase when configured]
+```
+
+The main workflow is intentionally simple: find a protocol, inspect its treatment options, open the supporting PDF, and keep the library organized as it grows.
 
 ## How It Works
 
