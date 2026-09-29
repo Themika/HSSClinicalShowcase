@@ -136,28 +136,6 @@ This project was built incrementally around a local-first data model:
 
 The implementation intentionally uses plain HTML, CSS, and JavaScript. That keeps the prototype easy to inspect, deploy as static files, and extend without a build pipeline.
 
-## Run Locally
-
-Because the application uses browser modules such as IndexedDB and loads Firebase/PDF.js assets, serve it from a local HTTP server rather than opening the HTML file directly.
-
-### Option 1: VS Code Live Server
-
-1. Install the **Live Server** extension.
-2. Open `index.html`.
-3. Select **Open with Live Server**.
-
-### Option 2: Python
-
-From the project directory:
-
-```powershell
-python -m http.server 8000
-```
-
-Then open <http://localhost:8000>.
-
-The app seeds a starter set of protocol names and categories on a new browser profile. Add a PDF to exercise the document workflow.
-
 ## Firebase Setup
 
 Cloud synchronization is optional. The current `Scripts/firebaseconfig.js` contains placeholder values, so the app will operate in local-only mode until a Firebase web app is configured.
