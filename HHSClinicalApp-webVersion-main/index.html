@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Clinical Protocol Hub</title>
+        <link rel="stylesheet" href="Styles/style.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+        <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js" defer></script>
+        <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js" defer></script>
+        <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js" defer></script>
+        <script src="Scripts/firebaseconfig.js" defer></script>
+        <script src="Scripts/index.js" defer></script>
+    </head>
+    <body>
+        <header class="top">
+        <div class="top-row">
+            <div>
+            <p class="brand-eyebrow mono" id="brandEyebrow" contenteditable="true" spellcheck="false" aria-label="Edit station title">Nursing &amp; Trials Station</p>
+            <h1 id="appTitle" contenteditable="true" spellcheck="false" aria-label="Edit application title">Clinical Protocol Hub</h1>
+            </div>
+            <div class="top-actions">
+            <div class="library-menu">
+                <button class="ghost-btn" id="libraryMenuBtn" type="button" aria-expanded="false" aria-controls="libraryMenu">Library <span aria-hidden="true">▾</span></button>
+                <div class="library-menu-panel" id="libraryMenu" hidden>
+                <button type="button" id="exportBtn" title="Download the whole library as a single JSON file">⬆ Export</button>
+                <button type="button" id="importBtn" title="Restore a library from an exported file">⬇ Import</button>
+                <button type="button" id="recentBtn" aria-expanded="false">◷ Recently viewed</button>
+                </div>
+            </div>
+            <input type="file" id="importInput" accept="application/json,.json,.txt" style="display:none;">
+            <button class="add-btn" id="addProtocolBtn" type="button">+ Add protocol</button>
+            </div>
+        </div>
+        <div class="search-wrap">
+            <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input id="search" type="text" placeholder="Search protocols, treatment options, or text inside PDFs… ( / )" autocomplete="off">
+            <button type="button" id="searchClear" class="search-clear" title="Clear search">✕</button>
+            </div>
+            <div class="result-row">
+            <p class="result-count" id="resultCount"></p>
+            </div>
+        </div>
+        <div class="category-row">
+            <div class="chip-scroll" id="categoryChips"></div>
+            <div class="category-row-actions">
+            <select id="sortSelect" class="sort-select" title="Sort protocols">
+                <option value="name">Sort: Name (A–Z)</option>
+                <option value="updated">Sort: Recently updated</option>
+            </select>
+            <button class="manage-cats-link" id="manageCatsBtn" type="button">Manage categories</button>
+            </div>
+        </div>
+        <div class="recent-row" id="recentRow" style="display:none;">
+            <span class="recent-label">Recently viewed</span>
+            <div class="chip-scroll" id="recentChips"></div>
+        </div>
+        </header>
+
+        <main>
+        <div class="grid" id="grid"></div>
+        <div class="empty-state" id="emptyState" style="display:none;">
+            <strong id="emptyTitle">No protocol matched that search</strong>
+            <span id="emptySub">Try a different name, or clear the search and category filter.</span>
+        </div>
+        </main>
+
+        <footer><span id="storageSummary"></span></footer>
+
+        <!-- PDF Viewer overlay -->
+        <div class="overlay" id="viewerOverlay">
+        <div class="viewer">
+            <div class="viewer-head">
+            <div>
+                <h2 id="viewerTitle">Treatment option</h2>
+                <div class="sub mono" id="viewerCode"></div>
+            </div>
+            <div>
+                <a class="icon-btn" id="viewerOpenNewTab" target="_blank" rel="noopener">Open in new tab</a>
+                <button class="icon-btn" id="viewerClose" type="button">Close ✕</button>
+            </div>
+            </div>
+            <iframe id="viewerFrame" title="Treatment option PDF"></iframe>
+        </div>
+        </div>
+
+        <!-- Add / Edit protocol overlay -->
+        <div class="overlay" id="formOverlay">
+        <div class="modal">
+            <h2 id="formTitle">Add protocol</h2>
+            <p class="sub" id="formSub">Name it, tag it with one or more categories, and attach treatment options after.</p>
+            <form id="protocolForm">
+            <div class="field">
+                <label for="pName">Protocol name</label>
+                <input type="text" id="pName" placeholder="e.g. Sepsis Screening Protocol">
+                <p class="field-hint warning" id="pNameWarning" style="display:none;">A protocol with this name already exists.</p>
+            </div>
+            <div class="field">
+                <label>Categories</label>
+                <div class="cat-checkbox-list" id="pCategoryList"></div>
+                <div class="inline-new-cat">
+                <input type="text" id="pNewCategoryName" placeholder="New category name">
+                <button type="button" class="btn-secondary" id="pAddCategoryBtn">+ Add</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="formCancel">Cancel</button>
+                <button type="submit" class="btn-primary" id="formSubmit">Save</button>
+            </div>
+            </form>
+        </div>
+        </div>
+
+        <!-- Add / Replace treatment option overlay -->
+        <div class="overlay" id="treatmentOverlay">
+        <div class="modal">
+            <h2 id="treatmentFormTitle">Add treatment option</h2>
+            <p class="sub" id="treatmentFormSub">Name this treatment option and attach its PDF.</p>
+            <form id="treatmentForm">
+            <div class="field">
+                <label for="tName">Treatment option name</label>
+                <input type="text" id="tName" placeholder="e.g. Standard-dose regimen A">
+                <p class="field-hint warning" id="tNameWarning" style="display:none;">This protocol already has a treatment option with this name.</p>
+            </div>
+            <div class="field">
+                <label id="tFileLabel">PDF file</label>
+                <div class="dropzone" id="tDropzone">
+                <input type="file" id="tFile" accept="application/pdf">
+                <span class="dropzone-hint">or drag a PDF file here</span>
+                </div>
+                <p class="field-hint" id="tFileHint"></p>
+            </div>
+            <div class="field">
+                <label>Categories <span class="field-hint-inline">(optional — tags just this PDF)</span></label>
+                <div class="cat-checkbox-list" id="tCategoryList"></div>
+                <div class="inline-new-cat">
+                <input type="text" id="tNewCategoryName" placeholder="New category name">
+                <button type="button" class="btn-secondary" id="tAddCategoryBtn">+ Add</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-secondary" id="treatmentCancel">Cancel</button>
+                <button type="submit" class="btn-primary" id="treatmentSubmit">Save</button>
+            </div>
+            </form>
+        </div>
+        </div>
+
+        <!-- Manage categories overlay -->
+        <div class="overlay" id="categoryOverlay">
+        <div class="modal">
+            <h2>Manage categories</h2>
+            <p class="sub">Rename or delete categories. Deleting one removes that tag from any protocols or PDFs that had it (a protocol left with no tags moves to Uncategorized).</p>
+            <div class="cat-list" id="catList"></div>
+            <div class="cat-add-row">
+            <input type="text" id="catAddInput" placeholder="New category name">
+            <button type="button" class="btn-primary" id="catAddBtn">Add</button>
+            </div>
+            <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="categoryOverlayClose">Done</button>
+            </div>
+        </div>
+        </div>
+
+        <div class="toast-stack" id="toastStack" aria-live="polite"></div>
+    </body>
+</html>

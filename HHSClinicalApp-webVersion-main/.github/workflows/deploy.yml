@@ -1,0 +1,79 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: ["main"]
+  # Lets you trigger a deploy manually from the Actions tab without a new push.
+  workflow_dispatch:
+
+# Needed so the workflow can publish to Pages using the built-in GITHUB_TOKEN.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; don't cancel one that's already publishing.
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Generate Firebase configuration
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const names = [
+            'FIREBASE_API_KEY',
+            'FIREBASE_AUTH_DOMAIN',
+            'FIREBASE_PROJECT_ID',
+            'FIREBASE_STORAGE_BUCKET',
+            'FIREBASE_MESSAGING_SENDER_ID',
+            'FIREBASE_APP_ID'
+          ];
+          const missing = names.filter((name) => !process.env[name]);
+          if (missing.length) {
+            throw new Error(`Missing GitHub secrets: ${missing.join(', ')}`);
+          }
+          const config = {
+            apiKey: process.env.FIREBASE_API_KEY,
+            authDomain: process.env.FIREBASE_AUTH_DOMAIN,
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            storageBucket: process.env.FIREBASE_STORAGE_BUCKET,
+            messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
+            appId: process.env.FIREBASE_APP_ID
+          };
+          fs.writeFileSync(
+            'Scripts/firebaseconfig.js',
+            `window.FIREBASE_CONFIG = ${JSON.stringify(config, null, 2)};\n`
+          );
+          NODE
+
+      # Uploads the whole repo as-is. If you ever move the site into a
+      # subfolder (e.g. /site), change path to that folder instead.
+      - name: Upload site as Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
